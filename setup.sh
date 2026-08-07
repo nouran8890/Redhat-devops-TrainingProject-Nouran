@@ -40,7 +40,26 @@ sudo apt install -y \
 install_mongodb() {
     echo "Installing MongoDB..."
 
-    MONGODB_CODENAME="noble"
+    case "$UBUNTU_VERSION" in
+    22.04)
+        MONGODB_CODENAME="jammy"
+        ;;
+    24.04)
+        MONGODB_CODENAME="noble"
+        ;;
+    25.10)
+        # MongoDB does not provide a native Questing repository,
+        # so use the Noble packages.
+        MONGODB_CODENAME="noble"
+        ;;
+    *)
+        echo "ERROR: Unsupported Ubuntu version: $UBUNTU_VERSION"
+        echo "Supported versions: 22.04, 24.04, 25.10"
+        exit 1
+        ;;
+    esac
+
+    echo "Using MongoDB repository for Ubuntu: $MONGODB_CODENAME"
 
     curl -fsSL https://pgp.mongodb.com/server-8.0.asc |
         sudo gpg --dearmor --yes \
