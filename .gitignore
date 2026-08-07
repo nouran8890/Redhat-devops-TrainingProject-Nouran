@@ -1,0 +1,251 @@
+
+# =========================
+# Environment / Secrets
+# =========================
+
+.env
+.env.*
+!.env.example
+*.env.local
+
+# Credentials / keys
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+credentials.json
+secrets.json
+
+
+# =========================
+# OS / Editor
+# =========================
+
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.directory
+
+
+# =========================
+# Python
+# =========================
+
+__pycache__/
+*.py[cod]
+*$py.class
+
+.venv/
+venv/
+env/
+ENV/
+
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+
+*.egg-info/
+dist/
+build/
+
+pip-wheel-metadata/
+
+
+# =========================
+# Node.js / npm
+# =========================
+
+node_modules/
+.npm/
+.npx/
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+.nyc_output/
+coverage/
+
+# Vite
+.vite/
+
+# Next.js
+.next/
+out/
+
+# React / frontend builds
+dist/
+build/
+
+
+# =========================
+# Go
+# =========================
+
+# Go binaries
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Build output
+/bin/
+/build/
+
+# Test / coverage output
+*.test
+*.out
+coverage.out
+
+# Go workspace
+go.work.sum
+
+# Optional Go build cache
+.gocache/
+
+
+# =========================
+# Java / Maven
+# =========================
+
+# Maven
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+
+# Gradle
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+
+# Java compiled files
+*.class
+
+# Java archives
+*.jar
+*.war
+*.ear
+
+# JVM crash logs
+hs_err_pid*
+replay_pid*
+
+
+# =========================
+# React / TypeScript
+# =========================
+
+*.tsbuildinfo
+
+# React build output
+dist/
+build/
+
+
+# =========================
+# Redis
+# =========================
+
+# Redis persistence
+dump.rdb
+appendonly.aof
+appendonlydir/
+
+# Redis logs
+redis.log
+
+
+# =========================
+# MongoDB
+# =========================
+
+# Local MongoDB database files
+data/
+mongodb-data/
+mongo-data/
+
+# MongoDB logs
+mongod.log
+
+
+# =========================
+# PostgreSQL
+# =========================
+
+# PostgreSQL local data
+postgres-data/
+pgdata/
+
+# PostgreSQL logs
+postgresql.log
+
+
+# =========================
+# MySQL
+# =========================
+
+# MySQL local data
+mysql-data/
+
+# MySQL logs
+mysql.log
+*.err
+
+
+# =========================
+# Logs
+# =========================
+
+logs/
+*.log
+
+
+# =========================
+# Temporary files
+# =========================
+
+tmp/
+temp/
+*.tmp
+*.temp
+
+
+# =========================
+# Docker
+# =========================
+
+# Docker local environment
+docker-compose.override.yml
+
+# Docker volumes
+docker-data/
+volumes/
+
+
+# =========================
+# Local development
+# =========================
+
+.local/
+.cache/
+.cache-loader/
+
+# Local service configuration
+config.local.*
+application-local.*
+application-local.properties
+application-local.yml
+application-local.yaml
