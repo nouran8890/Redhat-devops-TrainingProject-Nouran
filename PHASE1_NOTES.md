@@ -33,3 +33,17 @@ Unsupported Ubuntu versions are rejected with an error message.
 ##### Testing
 
 Tested the setup script on Ubuntu 22.04.5 LTS (Jammy). The script selected the `jammy` MongoDB repository and completed successfully.
+
+
+
+#### Problem 5: — Go version mismatch
+
+setup.sh installed Go 1.18 on my Ubuntu 22.04 environment.
+
+Impact: go mod tidy failed because the project requires Go 1.22.
+
+Investigation: checked go version, which go, go env, apt policy golang-go, and go.mod.
+
+Workaround: installed Go 1.22.12 locally.
+
+Potential project fix: update setup.sh to install/provide a compatible Go version.
