@@ -10,7 +10,6 @@ which ended up making it failing and not wanting to run, i had to remove that fi
 also had to add this folder to the redis group by running this
 `sudo chown -R redis:redis /var/log/redis`
 
-
 ### Nouran Mahmoud Hegazy, ID: 20231220 notes
 
 #### Problem 1 — MongoDB repository compatibility with ubuntu versions
@@ -20,13 +19,14 @@ The `setup.sh` script originally hardcoded the Ubuntu `noble` (Ubuntu 24.04) cod
 I use Ubuntu 22.04 (Jammy), so the hardcoded repository configuration was not suitable for my environment.
 
 We checked the MongoDB 8.0 repository support and determined that the setup script needs to account for the Ubuntu versions supported by the project.
+
 ##### Fix
 
 Updated `setup.sh` to detect the Ubuntu version and select the appropriate MongoDB repository codename:
 
-* Ubuntu 22.04 → `jammy`
-* Ubuntu 24.04 → `noble`
-* Ubuntu 25.10 → `noble` (MongoDB does not provide a native Questing repository)
+- Ubuntu 22.04 → `jammy`
+- Ubuntu 24.04 → `noble`
+- Ubuntu 25.10 → `noble` (MongoDB does not provide a native Questing repository)
 
 Unsupported Ubuntu versions are rejected with an error message.
 
@@ -145,3 +145,15 @@ curl http://localhost:8081/api/catalog
 ```
 
 The root URL `/` returning a `404` was **not considered a problem**, because the service does not define a root endpoint. The defined catalog endpoints are under `/api/catalog`.
+
+#### Problem 5: — Go version mismatch
+
+setup.sh installed Go 1.18 on my Ubuntu 22.04 environment.
+
+Impact: go mod tidy failed because the project requires Go 1.22.
+
+Investigation: checked go version, which go, go env, apt policy golang-go, and go.mod.
+
+Workaround: installed Go 1.22.12 locally.
+
+Potential project fix: update setup.sh to install/provide a compatible Go version.
