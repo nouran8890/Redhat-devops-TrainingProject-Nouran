@@ -10,6 +10,23 @@ which ended up making it failing and not wanting to run, i had to remove that fi
 also had to add this folder to the redis group by running this
 `sudo chown -R redis:redis /var/log/redis`
 
+### catalog issues:
+
+1- database mysql could't authenticate with the service so i had to change the password of the root user to rootpassword on my own to make it work
+2- frontend can't talk to the service due to CORS problems, so i refactored the code to allow for port 3000 to talk to it
+
+### booking issues:
+
+1- had to upgrade to a different version of pydantic since im using python3.13.7
+
+### ai insights issues:
+
+1- same problem as booking issue, pydantic version was 2.7.1, had to make it 2.8 or above
+
+### auth issues:
+
+1- user `eventhub` was not created, had to create it and the database `eventhub_auth` aswell
+
 ### Nouran Mahmoud Hegazy, ID: 20231220 notes
 
 #### Problem 1 — MongoDB repository compatibility with ubuntu versions

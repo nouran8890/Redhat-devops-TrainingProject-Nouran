@@ -13,4 +13,4 @@ if ! sudo systemctl is-active --quiet mysql; then
 fi
 
 echo "Starting legacy-catalog on port 8081..."
-mvn spring-boot:run
+mvn spring-boot:run -e
