@@ -4,8 +4,9 @@ import {
   PieChart, Pie, Cell, Legend,
 } from 'recharts';
 import { api } from './api';
+import { colors, sentimentColors, styles } from './theme';
 
-const SENTIMENT_COLORS = { positive: '#1D9E75', neutral: '#888780', negative: '#D85A30' };
+const AXIS = { stroke: colors.teal, fontSize: 11 };
 
 export default function Dashboard() {
   const [snapshot, setSnapshot] = useState(null);
@@ -39,10 +40,10 @@ export default function Dashboard() {
   }
 
   if (error) {
-    return <p style={{ color: 'crimson' }}>Failed to load analytics: {error}</p>;
+    return <p style={styles.error}>Failed to load analytics: {error}</p>;
   }
   if (!snapshot) {
-    return <p>Loading analytics...</p>;
+    return <p>Loading analytics…</p>;
   }
 
   const sentimentData = Object.entries(snapshot.sentimentTotals).map(([name, value]) => ({
@@ -60,74 +61,82 @@ export default function Dashboard() {
 
   return (
     <div>
-      <p style={{ color: '#888' }}>
+      <p style={styles.muted}>
         Last generated: {new Date(snapshot.generatedAt).toLocaleString()}
       </p>
 
-      <div style={{ display: 'flex', gap: '2rem', flexWrap: 'wrap' }}>
-        <div style={{ flex: '1 1 320px', height: 260 }}>
-          <h3>Bookings over time</h3>
-          <ResponsiveContainer width="100%" height="90%">
+      <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap' }}>
+        <div style={{ ...styles.card, flex: '1 1 340px', height: 300 }}>
+          <h3 style={styles.cardTitle}>Bookings over time</h3>
+          <ResponsiveContainer width="100%" height="88%">
             <LineChart data={snapshot.bookingsTimeseries}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="date" tick={{ fontSize: 11 }} />
-              <YAxis allowDecimals={false} />
-              <Tooltip />
-              <Line type="monotone" dataKey="bookings" stroke="#378ADD" strokeWidth={2} dot={false} />
+              <CartesianGrid strokeDasharray="3 3" stroke={colors.border} />
+              <XAxis dataKey="date" tick={AXIS} stroke={AXIS.stroke} />
+              <YAxis allowDecimals={false} tick={AXIS} stroke={AXIS.stroke} />
+              <Tooltip contentStyle={{ background: colors.surface, border: `1px solid ${colors.border}`, borderRadius: 8 }} labelStyle={{ color: colors.primaryText }} itemStyle={{ color: colors.primaryText }} />
+              <Line type="monotone" dataKey="bookings" stroke={colors.brand} strokeWidth={2} dot={false} />
             </LineChart>
           </ResponsiveContainer>
         </div>
 
-        <div style={{ flex: '1 1 260px', height: 260 }}>
-          <h3>Review sentiment</h3>
-          <ResponsiveContainer width="100%" height="90%">
+        <div style={{ ...styles.card, flex: '1 1 280px', height: 300 }}>
+          <h3 style={styles.cardTitle}>Review sentiment</h3>
+          <ResponsiveContainer width="100%" height="88%">
             <PieChart>
-              <Pie data={sentimentData} dataKey="value" nameKey="name" outerRadius={80}>
+              <Pie
+                data={sentimentData}
+                dataKey="value"
+                nameKey="name"
+                outerRadius={80}
+                label={({ name, value }) => `${name} (${value})`}
+              >
                 {sentimentData.map((entry) => (
-                  <Cell key={entry.name} fill={SENTIMENT_COLORS[entry.name] || '#888'} />
+                  <Cell key={entry.name} fill={sentimentColors[entry.name] || sentimentColors.neutral} />
                 ))}
               </Pie>
-              <Legend />
-              <Tooltip />
+              <Legend wrapperStyle={{ color: colors.primaryText }} />
+              <Tooltip contentStyle={{ background: colors.surface, border: `1px solid ${colors.border}`, borderRadius: 8 }} itemStyle={{ color: colors.primaryText }} />
             </PieChart>
           </ResponsiveContainer>
         </div>
       </div>
 
-      <h3>Events</h3>
-      <input
-        placeholder="Filter by event title..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        style={{ marginBottom: '0.5rem', padding: '0.25rem 0.5rem' }}
-      />
-      <table style={{ borderCollapse: 'collapse', width: '100%' }}>
-        <thead>
-          <tr>
-            {columns.map(([key, label]) => (
-              <th
-                key={key}
-                onClick={() => toggleSort(key)}
-                style={{ cursor: 'pointer', textAlign: 'left', borderBottom: '1px solid #ccc', padding: '0.4rem' }}
-              >
-                {label}{sortKey === key ? (sortDir === 'asc' ? ' ^' : ' v') : ''}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((row) => (
-            <tr key={row.eventId}>
-              <td style={{ padding: '0.4rem', borderBottom: '1px solid #eee' }}>{row.title}</td>
-              <td style={{ padding: '0.4rem', borderBottom: '1px solid #eee' }}>{row.bookingsCount}</td>
-              <td style={{ padding: '0.4rem', borderBottom: '1px solid #eee' }}>${row.revenue}</td>
-              <td style={{ padding: '0.4rem', borderBottom: '1px solid #eee' }}>{row.reviewCount}</td>
-              <td style={{ padding: '0.4rem', borderBottom: '1px solid #eee' }}>{row.avgSentimentScore}</td>
+      <div style={{ ...styles.card, marginTop: '1rem' }}>
+        <h3 style={styles.cardTitle}>Events</h3>
+        <input
+          placeholder="Filter by event title…"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          style={{ ...styles.input, maxWidth: 320, marginBottom: '0.75rem' }}
+        />
+        <table style={{ borderCollapse: 'collapse', width: '100%' }}>
+          <thead>
+            <tr>
+              {columns.map(([key, label]) => (
+                <th
+                  key={key}
+                  onClick={() => toggleSort(key)}
+                  style={{ cursor: 'pointer', textAlign: 'left', borderBottom: `1px solid ${colors.border}`, padding: '0.4rem', color: colors.primaryText }}
+                >
+                  {label}{sortKey === key ? (sortDir === 'asc' ? ' ^' : ' v') : ''}
+                </th>
+              ))}
             </tr>
-          ))}
-        </tbody>
-      </table>
-      {rows.length === 0 && <p>No events match your filter.</p>}
+          </thead>
+          <tbody>
+            {rows.map((row) => (
+              <tr key={row.eventId}>
+                <td style={{ padding: '0.4rem', borderBottom: `1px solid ${colors.border}` }}>{row.title}</td>
+                <td style={{ padding: '0.4rem', borderBottom: `1px solid ${colors.border}` }}>{row.bookingsCount}</td>
+                <td style={{ padding: '0.4rem', borderBottom: `1px solid ${colors.border}` }}>${row.revenue}</td>
+                <td style={{ padding: '0.4rem', borderBottom: `1px solid ${colors.border}` }}>{row.reviewCount}</td>
+                <td style={{ padding: '0.4rem', borderBottom: `1px solid ${colors.border}` }}>{row.avgSentimentScore}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        {rows.length === 0 && <p style={styles.muted}>No events match your filter.</p>}
+      </div>
     </div>
   );
 }
