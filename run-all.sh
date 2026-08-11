@@ -10,6 +10,7 @@ SERVICES=(
     "booking:8083"
     "ai-insights:8084"
     "analytics:8085"
+    "analytics-job:"
     "notification:"
     "frontend:3000"
 )

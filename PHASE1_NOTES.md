@@ -18,6 +18,7 @@ also had to add this folder to the redis group by running this
 ### booking issues:
 
 1- had to upgrade to a different version of pydantic since im using python3.13.7
+2- publishing events to rabbitmq was sending nothing in `events.py`, had to create the `event` object itself
 
 ### ai insights issues:
 
@@ -26,6 +27,7 @@ also had to add this folder to the redis group by running this
 ### auth issues:
 
 1- user `eventhub` was not created, had to create it and the database `eventhub_auth` aswell
+2- there was a typo in the name of the `JWT_SECRET` in the routes
 
 ### Nouran Mahmoud Hegazy, ID: 20231220 notes
 
