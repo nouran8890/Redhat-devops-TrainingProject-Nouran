@@ -28,7 +28,8 @@ also had to add this folder to the redis group by running this
 
 1- user `eventhub` was not created, had to create it and the database `eventhub_auth` aswell
 2- there was a typo in the name of the `JWT_SECRET` in the routes
-
+----
+----
 ### Nouran Mahmoud Hegazy, ID: 20231220 notes
 
 #### Problem 1 — MongoDB repository compatibility with ubuntu versions
@@ -52,7 +53,7 @@ Unsupported Ubuntu versions are rejected with an error message.
 ##### Testing
 
 Tested the setup script on Ubuntu 22.04.5 LTS (Jammy). The script selected the `jammy` MongoDB repository and completed successfully.
-
+----
 #### Problem 2 — Missing `eventhub_catalog` database
 
 The legacy catalog service expected a MySQL database named `eventhub_catalog`, but the database had not been initialized yet.
@@ -79,7 +80,7 @@ sudo mysql < db-seed/mysql-seed.sql
 
 The database and table were then verified successfully, along with the four sample catalog events.
 
----
+-----
 
 #### Problem 3 — MySQL root authentication mismatch
 
@@ -132,7 +133,7 @@ This uses the locally configured authentication method for the MySQL root accoun
 
 The legacy catalog application subsequently connected to MySQL successfully and started normally.
 
----
+-----
 
 #### Problem 4 — Running Maven from the wrong directory
 
@@ -165,6 +166,8 @@ curl http://localhost:8081/api/catalog
 
 The root URL `/` returning a `404` was **not considered a problem**, because the service does not define a root endpoint. The defined catalog endpoints are under `/api/catalog`.
 
+------
+
 #### Problem 5: — Go version mismatch
 
 setup.sh installed Go 1.18 on my Ubuntu 22.04 environment.
@@ -176,3 +179,36 @@ Investigation: checked go version, which go, go env, apt policy golang-go, and g
 Workaround: installed Go 1.22.12 locally.
 
 Potential project fix: update setup.sh to install/provide a compatible Go version.
+
+----
+
+#### Problem 6 — PostgreSQL auth database/user were not initialized
+
+The auth service expected the `eventhub` PostgreSQL user and `eventhub_auth`
+database, but `setup.sh` did not create them.
+
+**Fix:** Created the user and database manually. My teammate Mohammed faced
+the same issue and used the same fix; he also raised it as an issue.
+
+-----
+
+#### Local environment setup
+
+- Created `frontend/.env` from `.env.example`.
+- Recreated the AI insight service `.venv` and installed its dependencies.
+
+These are local environment files and are not committed to the repository.
+
+-----
+
+#### Problem 7 — Frontend/catalog 403
+
+The frontend initially returned `403 Invalid CORS request` when opened using
+`127.0.0.1:3000`.
+
+**Resolution:** Opened the frontend using `localhost:3000`, after which the
+catalog loaded successfully.
+
+
+
+
