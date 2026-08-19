@@ -1,0 +1,14 @@
+.git 
+.gitignore
+.gitattributes
+
+.vscode
+
+*.md
+LICENSE
+docs/
+
+__pycache__
+
+.env
+.env.*
