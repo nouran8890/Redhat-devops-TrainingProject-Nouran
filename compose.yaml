@@ -1,0 +1,158 @@
+services:
+  postgres-db:
+    image: docker.io/library/postgres:16
+    environment:
+      POSTGRES_DB: eventhub_auth
+      POSTGRES_USER: eventhub
+      POSTGRES_PASSWORD: eventhub
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - eventhub-net
+
+  mysql-db:
+    image: docker.io/library/mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_DATABASE: eventhub_catalog
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - eventhub-net
+
+  mongodb:
+    image: docker.io/library/mongo:7
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - eventhub-net
+
+  redis:
+    image: docker.io/library/redis:7
+    networks:
+      - eventhub-net
+
+  rabbitmq:
+    image: docker.io/library/rabbitmq:3-management
+    networks:
+      - eventhub-net
+
+  ai-insight-service:
+    build:
+      context: ./services/ai-insight-service-python
+      dockerfile: Containerfile
+    image: ai-insight-service-python-image:phase3
+    ports:
+      - "8084:8084"
+    environment:
+      PORT: 8084
+    networks:
+      - eventhub-net
+
+  auth-service:
+    build:
+      context: ./services/auth-service-node
+      dockerfile: Containerfile
+    image: auth-service-node-image:phase3
+    ports:
+      - "8082:8082"
+    environment:
+      PORT: 8082
+      PGHOST: postgres-db
+      PGPORT: 5432
+      PGUSER: eventhub
+      PGPASSWORD: eventhub
+      PGDATABASE: eventhub_auth
+      JWT_SECRET: noura-phase3-very-secret-secret
+    networks:
+      - eventhub-net
+
+  catalog-service:
+    build:
+      context: ./services/legacy-catalog-java
+      dockerfile: Containerfile
+    image: legacy-catalog-java-image:phase3
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-db:3306/${MYSQL_DATABASE:-eventhub_catalog}
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root123}
+    networks:
+      - eventhub-net
+
+  booking-service:
+    build:
+      context: ./services/booking-service-python
+      dockerfile: Containerfile
+    image: booking-service-python-image:phase3
+    ports:
+      - "8083:8083"
+    environment:
+      PORT: 8083
+      MONGO_URI: mongodb://mongodb:27017
+      MONGO_DB: eventhub_bookings
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672/
+      RABBITMQ_QUEUE: bookings
+      AI_INSIGHT_URL: http://ai-insight-service:8084
+    networks:
+      - eventhub-net
+
+  analytics-service:
+    build:
+      context: ./services/analytics-service-python
+      dockerfile: Containerfile
+    image: analytics-service-python-image:phase3
+    ports:
+      - "8085:8085"
+    environment:
+      PORT: 8085
+      REDIS_URL: redis://redis:6379/0
+      BOOKING_SERVICE_URL: http://booking-service:8083
+      CATALOG_SERVICE_URL: http://catalog-service:8081
+      SNAPSHOT_KEY: analytics:snapshot
+    networks:
+      - eventhub-net
+
+  notification-worker:
+    build:
+      context: ./services/notification-worker-go
+      dockerfile: Containerfile
+    image: notification-worker-go-image:phase3
+    environment:
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672/
+      RABBITMQ_QUEUE: bookings
+    networks:
+      - eventhub-net
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Containerfile
+    image: frontend-image:phase3
+    ports:
+      - "3000:80"
+    networks:
+      - eventhub-net
+
+  analytics-job:
+    build:
+      context: ./services/analytics-service-python
+      dockerfile: Containerfile
+    image: analytics-service-python-image:phase3
+    environment:
+      REDIS_URL: redis://redis:6379/0
+      BOOKING_SERVICE_URL: http://booking-service:8083
+      CATALOG_SERVICE_URL: http://catalog-service:8081
+      SNAPSHOT_KEY: analytics:snapshot
+    command: ["python", "job.py"]
+    networks:
+      - eventhub-net
+
+networks:
+  eventhub-net:
+
+volumes:
+  postgres_data:
+  mysql_data:
+  mongo_data:
